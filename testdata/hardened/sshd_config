@@ -1,0 +1,15 @@
+# Keys only, modern algorithms, forwarding off except for one group.
+HostKey /etc/ssh/ssh_host_ed25519_key
+KexAlgorithms -diffie-hellman-group14-sha256
+PermitRootLogin no
+AuthenticationMethods publickey
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+DisableForwarding yes
+LogLevel VERBOSE
+MaxAuthTries 3
+LoginGraceTime 30
+
+Match Group tunnel
+    DisableForwarding no
+    AllowTcpForwarding local

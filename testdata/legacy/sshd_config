@@ -1,0 +1,25 @@
+# A configuration that has accumulated changes over the years.
+Protocol 2
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_dsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+Ciphers +aes256-cbc,3des-cbc
+MACs hmac-sha2-256,hmac-md5
+KexAlgorithms curve25519-sha256,diffie-hellman-group1-sha1
+PubkeyAcceptedKeyTypes +ssh-rsa
+
+PermitRootLogin prohibit-password
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+StrictModes no
+MaxAuthTries 10
+
+Match Address 10.0.0.0/8
+    PermitRootLogin yes
+    PasswordAuthentication yes
+    Ciphers aes128-ctr
+
+Match User deploy
+    PermitUserEnvironment yes
+    AllowTcpForwarding yes

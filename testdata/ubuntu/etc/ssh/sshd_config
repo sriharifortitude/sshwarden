@@ -1,0 +1,21 @@
+# Laid out like the sshd_config Ubuntu 22.04 and 24.04 install (comments shortened),
+# with two lines an administrator appended at the end.
+
+Include /etc/ssh/sshd_config.d/*.conf
+
+#Port 22
+#PermitRootLogin prohibit-password
+#PubkeyAuthentication yes
+
+KbdInteractiveAuthentication no
+UsePAM yes
+
+X11Forwarding yes
+PrintMotd no
+
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+# Hardening, added later
+PasswordAuthentication no
+PermitRootLogin no

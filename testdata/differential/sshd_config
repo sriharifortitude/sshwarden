@@ -1,0 +1,18 @@
+# For the differential test against a real sshd: list arithmetic, aliases, first-wins, time units.
+Ciphers -*-cbc,aes192-ctr
+MACs ^hmac-sha2-512
+KexAlgorithms +diffie-hellman-group14-sha1
+HostKeyAlgorithms -ssh-rsa*,*nistp521*
+PubkeyAcceptedAlgorithms rsa-sha2-512,ssh-ed25519
+PermitRootLogin without-password
+X11Forwarding yes
+X11Forwarding no
+MaxAuthTries 4
+LoginGraceTime 1m30s
+ChallengeResponseAuthentication no
+KbdInteractiveAuthentication yes
+PasswordAuthentication=no
+UsePAM yes
+LogLevel verbose
+AllowTcpForwarding local
+GatewayPorts clientspecified
