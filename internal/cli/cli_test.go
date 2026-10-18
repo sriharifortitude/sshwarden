@@ -25,11 +25,13 @@ func TestTheUbuntuLayout(t *testing.T) {
 	}
 }
 
-func TestWithoutRootTheDropInIsNotFound(t *testing.T) {
-	// /etc/ssh/sshd_config.d does not exist on the test machine (or is not this fixture's).
+func TestWithoutRootTheFixturesDropInIsNotRead(t *testing.T) {
+	// Without --root the absolute Include means the real /etc/ssh/sshd_config.d. On GitHub's
+	// Ubuntu runners that directory exists and holds a 50-cloud-init.conf of its own, so the
+	// test checks that the fixture's copy was not read, not that no such file was.
 	_, out, _ := run(t, "", "--json", td+"ubuntu/etc/ssh/sshd_config")
-	if strings.Contains(out, "50-cloud-init") {
-		t.Fatalf("absolute Include resolved without --root:\n%s", out)
+	if strings.Contains(out, "testdata/ubuntu/etc/ssh/sshd_config.d") {
+		t.Fatalf("absolute Include resolved against the fixture without --root:\n%s", out)
 	}
 }
 

@@ -54,7 +54,9 @@ compare ubuntu "$tmp/ubuntu.conf" --root testdata/ubuntu testdata/ubuntu/etc/ssh
 # sshwarden's SSH040, SSH042 and SSH043 (high) mean "sshd refuses to start"; sshd -t must agree.
 for f in testdata/hardened/sshd_config testdata/differential/sshd_config testdata/legacy/sshd_config "$tmp/ubuntu.conf"; do
   predicted=accept
-  if "$BIN" --json "$f" | python3 -c 'import json,sys; sys.exit(0 if any(x["id"] in ("SSH040","SSH042","SSH043") and x["severity"]=="high" for x in json.load(sys.stdin)["findings"]) else 1)'; then
+  # sshwarden exits 1 when it has findings; under pipefail that must not decide the prediction.
+  "$BIN" --json "$f" > "$tmp/findings.json" || true
+  if python3 -c 'import json,sys; sys.exit(0 if any(x["id"] in ("SSH040","SSH042","SSH043") and x["severity"]=="high" for x in json.load(open(sys.argv[1]))["findings"]) else 1)' "$tmp/findings.json"; then
     predicted=reject
   fi
   if sudo "$SSHD" -t -f "$f" -h "$tmp/hostkey" 2>"$tmp/err.txt"; then actual=accept; else actual=reject; fi

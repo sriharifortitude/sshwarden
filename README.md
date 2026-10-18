@@ -116,14 +116,22 @@ go test ./...                       # 47 tests and a fuzz target
 ./scripts/differential.sh           # against a real sshd; needs openssh-server and sudo
 ```
 
-**Against a real sshd: written, not yet run.** `scripts/differential.sh` runs `sshd -T` on
-four fixtures (OpenSSH's stock file, the Ubuntu layout, a hardened file, and one written to
-exercise `+`/`-`/`^` lists, wildcard removal, an alias losing to its first spelling and a time
-value) and requires every value `sshwarden --effective` prints to equal sshd's. It also
-requires `sshd -t` to reject a fixture exactly when sshwarden predicts sshd will not start.
-There is no sshd on the Windows machine this was built on, so the script runs for the first
-time in CI. Until it passes there, treat the list of keywords allowed inside Match, and the
-form of each value in `--effective`, as my reading of sshd_config(5) and not as verified.
+**Against a real sshd.** `scripts/differential.sh` runs `sshd -T` on four fixtures:
+OpenSSH's stock file, the Ubuntu layout, a hardened file, and one written to exercise
+`+`/`-`/`^` lists, wildcard removal, an alias losing to its first spelling and a time value.
+It requires every value `sshwarden --effective` prints to equal sshd's. It also requires
+`sshd -t` to reject a fixture exactly when sshwarden predicts sshd will not start. There is no
+sshd on the Windows machine this was built on, so it runs in CI. On OpenSSH 9.6p1 (Ubuntu
+24.04), all 96 values sshwarden printed for the four fixtures matched `sshd -T` on the first
+run.
+
+That first run still failed twice, both times for reasons in the tests, not the tool. The
+`sshd -t` comparison ran under `set -o pipefail`, so sshwarden's own exit status decided the
+prediction. sshd rejected the legacy fixture over `Ciphers` inside a Match block, the line
+sshwarden reports as SSH042, yet the script recorded that sshwarden had predicted a
+successful start. And a unit test assumed `/etc/ssh/sshd_config.d/50-cloud-init.conf` would
+not exist on the machine running it. GitHub's Ubuntu runners have exactly that file. The
+keywords allowed inside Match are verified against sshd only for those the fixtures use.
 
 **Real files.** The `sshd_config` that OpenSSH 10.3 ships (as bundled with Git for Windows)
 gives exactly one finding: password authentication is on by default. The Ubuntu fixture is
